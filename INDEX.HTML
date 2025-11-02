@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BridgeLabz - File Sharing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1a237e 0%, #ff6f00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .header-content {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 15px;
+        }
+
+        .tagline {
+            text-align: center;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 15px;
+            color: #e65100;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 3px solid #ff6f00;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            border: 3px dashed #1a237e;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,111,0,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .upload-section:hover {
+            background: linear-gradient(135deg, #c5cae9 0%, #9fa8da 100%);
+            border-color: #ff6f00;
+            transform: scale(1.01);
+        }
+
+        .upload-section.dragover {
+            background: linear-gradient(135deg, #9fa8da 0%, #7986cb 100%);
+            border-color: #ff6f00;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .upload-section h2 {
+            color: #1a237e;
+            margin-bottom: 10px;
+            font-size: 26px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-section p {
+            color: #283593;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 30px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            border-left: 5px solid #1a237e;
+        }
+
+        .file-item:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            transform: translateX(8px);
+            border-color: #ff6f00;
+            box-shadow: 0 4px 15px rgba(26,35,126,0.15);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .file-details h3 {
+            font-size: 17px;
+            color: #1a237e;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .file-details p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .remove-btn {
+            background: linear-gradient(135deg, #ff6f00 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(255,111,0,0.3);
+        }
+
+        .remove-btn:hover {
+            background: linear-gradient(135deg, #f57c00 0%, #e64a19 100%);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255,111,0,0.5);
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 6px 20px rgba(26,35,126,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .generate-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(26,35,126,0.5);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .link-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 15px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            border: 3px solid #ff6f00;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .link-section.active {
+            display: block;
+        }
+
+        .link-section h3 {
+            color: #e65100;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .link-display {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .link-input {
+            flex: 1;
+            padding: 16px;
+            border: 3px solid #ff6f00;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #1a237e;
+            font-weight: 600;
+            background: white;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #ff6f00 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(255,111,0,0.3);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #f57c00 0%, #e64a19 100%);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255,111,0,0.5);
+        }
+
+        .success-message {
+            color: #2e7d32;
+            font-size: 15px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background: #c8e6c9;
+            border-radius: 8px;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .view-page {
+            display: none;
+        }
+
+        .view-page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #424242 0%, #616161 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #212121 0%, #424242 100%);
+            transform: translateX(-3px);
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(26,35,126,0.3);
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #0d1642 0%, #1a237e 100%);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(26,35,126,0.5);
+        }
+
+        .new-upload-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #424242 0%, #616161 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .new-upload-btn:hover {
+            background: linear-gradient(135deg, #212121 0%, #424242 100%);
+            transform: translateY(-2px);
+        }
+
+        .view-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            border-radius: 15px;
+            border-left: 5px solid #ff6f00;
+        }
+
+        .view-header h2 {
+            color: #1a237e;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .view-header p {
+            color: #283593;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a237e 0%, #3949ab 50%, #ff6f00 100%);
+            transition: width 0.3s;
+            width: 0%;
+            box-shadow: 0 0 10px rgba(255,111,0,0.5);
+        }
+
+        .storage-info {
+            text-align: center;
+            color: #1a237e;
+            font-size: 14px;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 13px;
+            border-top: 3px solid #1a237e;
+        }
+
+        .footer a {
+            color: #ff6f00;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <span class="logo-icon"></span>
+                    <span class="logo-text">BridgeLabz</span>
+                </div>
+            </div>
+            <div class="header-content">
+                <h1>📁 File Sharing Tool</h1>
+                <p>Secure file sharing made simple and efficient</p>
+            </div>
+        </div>
+
+        <div class="tagline">
+            💼 Empowering Engineers | Building Careers | Transforming Tech Employability
+        </div>
+
+        <div class="content">
+            <!-- Upload Page -->
+            <div id="uploadPage">
+                <div class="upload-section" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <h2>Click or Drop Files Here</h2>
+                    <p>Upload files of any size - Powered by advanced storage technology</p>
+                    <input type="file" id="fileInput" multiple>
+                </div>
+
+                <div class="file-list" id="fileList"></div>
+
+                <button class="generate-btn" id="generateBtn" disabled>🔗 Generate Shareable Link</button>
+                
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="storage-info" id="storageInfo"></div>
+
+                <div class="link-section" id="linkSection">
+                    <h3>✅ Your Shareable Link is Ready!</h3>
+                    <div class="link-display">
+                        <input type="text" class="link-input" id="shareLink" readonly>
+                        <button class="copy-btn" id="copyBtn">📋 Copy Link</button>
+                    </div>
+                    <div class="success-message" id="successMsg">✓ Link copied successfully! Share it with anyone.</div>
+                    <button class="new-upload-btn" id="newUploadBtn">📤 Upload New Files</button>
+                </div>
+            </div>
+
+            <!-- View Page -->
+            <div id="viewPage" class="view-page">
+                <button class="back-btn" id="backBtn">← Back to Home</button>
+                <div class="view-header">
+                    <h2>📥 Shared Files</h2>
+                    <p>Download any file with a single click</p>
+                </div>
+                <div id="viewFileList"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by <a href="https://www.bridgelabz.com" target="_blank">BridgeLabz</a> | Building Tomorrow's Tech Talent Today
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB Setup
+        const DB_NAME = 'BridgeLabzFileShare';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'files';
+        let db;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        function saveToIndexedDB(id, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put({ id: id, data: data });
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function getFromIndexedDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(id);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        let uploadedFiles = [];
+
+        const uploadPage = document.getElementById('uploadPage');
+        const viewPage = document.getElementById('viewPage');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const generateBtn = document.getElementById('generateBtn');
+        const linkSection = document.getElementById('linkSection');
+        const shareLink = document.getElementById('shareLink');
+        const copyBtn = document.getElementById('copyBtn');
+        const successMsg = document.getElementById('successMsg');
+        const newUploadBtn = document.getElementById('newUploadBtn');
+        const viewFileList = document.getElementById('viewFileList');
+        const backBtn = document.getElementById('backBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const storageInfo = document.getElementById('storageInfo');
+
+        // Initialize IndexedDB
+        initDB().then(() => {
+            console.log('BridgeLabz File Share - IndexedDB initialized');
+            checkURLParams();
+        }).catch(err => {
+            console.error('Failed to initialize IndexedDB:', err);
+            alert('Failed to initialize storage. Please try refreshing the page.');
+        });
+
+        function checkURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareId = urlParams.get('files');
+            if (shareId) {
+                loadSharedFiles(shareId);
+            }
+        }
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                uploadedFiles.push(file);
+            });
+            renderFileList();
+            generateBtn.disabled = uploadedFiles.length === 0;
+            updateStorageInfo();
+        }
+
+        function renderFileList() {
+            fileList.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${getFileIcon(file.name)}</div>
+                        <div class="file-details">
+                            <h3>${file.name}</h3>
+                            <p>${formatFileSize(file.size)}</p>
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFile(${index})">✕ Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderFileList();
+            generateBtn.disabled = uploadedFiles.length === 0;
+            updateStorageInfo();
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                pdf: '📄', doc: '📝', docx: '📝', xls: '📊', xlsx: '📊',
+                ppt: '📽️', pptx: '📽️', jpg: '🖼️', jpeg: '🖼️', png: '🖼️',
+                gif: '🖼️', mp4: '🎥', avi: '🎥', mov: '🎥', mp3: '🎵',
+                wav: '🎵', zip: '🗜️', rar: '🗜️', txt: '📃', js: '💻',
+                html: '🌐', css: '🎨', py: '🐍', java: '☕'
+            };
+            return icons[ext] || '📎';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function updateStorageInfo() {
+            const totalSize = uploadedFiles.reduce((sum, file) => sum + file.size, 0);
+            if (totalSize > 0) {
+                storageInfo.textContent = `📦 Total size: ${formatFileSize(totalSize)}`;
+            } else {
+                storageInfo.textContent = '';
+            }
+        }
+
+        generateBtn.addEventListener('click', async () => {
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ Processing Files...';
+            progressBar.classList.add('active');
+
+            const shareId = 'bl_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            try {
+                const fileData = [];
+                const totalFiles = uploadedFiles.length;
+                
+                for (let i = 0; i < totalFiles; i++) {
+                    const file = uploadedFiles[i];
+                    const progress = ((i + 1) / totalFiles) * 100;
+                    progressFill.style.width = progress + '%';
+                    generateBtn.textContent = `⏳ Processing ${i + 1}/${totalFiles}...`;
+                    
+                    const data = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            resolve({
+                                name: file.name,
+                                size: file.size,
+                                type: file.type,
+                                data: e.target.result
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    fileData.push(data);
+                }
+
+                const shareData = { 
+                    files: fileData,
+                    created: new Date().toISOString(),
+                    source: 'BridgeLabz File Share'
+                };
+                
+                await saveToIndexedDB(shareId, shareData);
+                
+                const url = window.location.origin + window.location.pathname + '?files=' + shareId;
+                shareLink.value = url;
+                linkSection.classList.add('active');
+                
+                generateBtn.textContent = '✅ Link Generated Successfully!';
+                progressBar.classList.remove('active');
+                progressFill.style.width = '0%';
+                
+                setTimeout(() => {
+                    generateBtn.textContent = '🔗 Generate Shareable Link';
+                    generateBtn.disabled = false;
+                }, 2000);
+                
+            } catch (e) {
+                console.error('Error generating link:', e);
+                alert('Error generating link. Please try again with smaller files or fewer files.');
+                generateBtn.textContent = '🔗 Generate Shareable Link';
+                generateBtn.disabled = false;
+                progressBar.classList.remove('active');
+                progressFill.style.width = '0%';
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            shareLink.select();
+            shareLink.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            successMsg.classList.add('active');
+            copyBtn.textContent = '✓ Copied!';
+            
+            setTimeout(() => {
+                successMsg.classList.remove('active');
+                copyBtn.textContent = '📋 Copy Link';
+            }, 2000);
+        });
+
+        newUploadBtn.addEventListener('click', () => {
+            uploadedFiles = [];
+            renderFileList();
+            generateBtn.disabled = true;
+            linkSection.classList.remove('active');
+            fileInput.value = '';
+            storageInfo.textContent = '';
+        });
+
+        async function loadSharedFiles(shareId) {
+            try {
+                const result = await getFromIndexedDB(shareId);
+                
+                if (!result || !result.data) {
+                    alert('Invalid or expired link. Please request a new link from the sender.');
+                    return;
+                }
+
+                const data = result.data;
+
+                uploadPage.style.display = 'none';
+                viewPage.classList.add('active');
+
+                viewFileList.innerHTML = '';
+                data.files.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <div class="file-icon">${getFileIcon(file.name)}</div>
+                            <div class="file-details">
+                                <h3>${file.name}</h3>
+                                <p>${formatFileSize(file.size)}</p>
+                            </div>
+                        </div>
+                        <button class="download-btn" onclick="downloadFile(${index})">⬇ Download</button>
+                    `;
+                    viewFileList.appendChild(fileItem);
+                });
+
+                window.sharedFiles = data.files;
+            } catch (e) {
+                console.error('Error loading files:', e);
+                alert('Error loading files. The link may be corrupted or expired.');
+            }
+        }
+
+        function downloadFile(index) {
+            const file = window.sharedFiles[index];
+            const link = document.createElement('a');
+            link.href = file.data;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        backBtn.addEventListener('click', () => {
+            window.location.href = window.location.origin + window.location.pathname;
+        });
+
+        window.removeFile = removeFile;
+        window.downloadFile = downloadFile;
+    </script>
+</body>
+</html>
